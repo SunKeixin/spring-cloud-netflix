@@ -48,6 +48,10 @@ import com.netflix.ribbon.Ribbon;
 
 /**
  * Auto configuration for Ribbon (client side load balancing).
+ *AutoConfigureAfter注解：RibbonAutoConfiguration在EurekaClientAutoConfiguration后初始化，也就是ribbon在eureka后面初始化，这样才能ribbon实例
+ *
+ *AutoConfigureBefore注解：RibbonAutoConfiguration在LoadBalancerAutoConfiguration和AsyncLoadBalancerAutoConfiguration之前初始化，因为，它们初始化时用到了
+ *LoadBalancerClient，所以，RibbonAutoConfiguration要先初始化，这样spring容器中才有LoadBalancerClient的bean供他们使用。
  *
  * @author Spencer Gibb
  * @author Dave Syer
@@ -79,6 +83,13 @@ public class RibbonAutoConfiguration {
 		return factory;
 	}
 
+	/**
+	 * @Author sunqixin
+	 * @Description @Bean的形式注入LoadBalancerClient
+	 * @Date 21:03 2020/8/16
+	 * @param :
+	 * @return org.springframework.cloud.client.loadbalancer.LoadBalancerClient
+	 **/
 	@Bean
 	@ConditionalOnMissingBean(LoadBalancerClient.class)
 	public LoadBalancerClient loadBalancerClient() {
