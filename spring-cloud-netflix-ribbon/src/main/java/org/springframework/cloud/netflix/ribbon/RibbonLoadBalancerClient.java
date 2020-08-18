@@ -83,11 +83,14 @@ public class RibbonLoadBalancerClient implements LoadBalancerClient {
 
 	@Override
 	public <T> T execute(String serviceId, LoadBalancerRequest<T> request) throws IOException {
+		//获得依据核心ILoadBalancer，里面包含了serviceId对应的实例列表等信息
 		ILoadBalancer loadBalancer = getLoadBalancer(serviceId);
+		//选取一个实例
 		Server server = getServer(loadBalancer);
 		if (server == null) {
 			throw new IllegalStateException("No instances available for " + serviceId);
 		}
+		//生成一个ribbon服务，信息包括：RibbonServer{serviceId='ribbon-serverB', server=10.236.119.207:8088, secure=false, metadata=vlsi.utils.CompactHashMap@df89bf5}
 		RibbonServer ribbonServer = new RibbonServer(serviceId, server, isSecure(server,
 				serviceId), serverIntrospector(serviceId).getMetadata(server));
 
@@ -151,6 +154,7 @@ public class RibbonLoadBalancerClient implements LoadBalancerClient {
 		return loadBalancer.chooseServer("default"); // TODO: better handling of key
 	}
 
+	//serviceId其实就是serviceName
 	protected ILoadBalancer getLoadBalancer(String serviceId) {
 		return this.clientFactory.getLoadBalancer(serviceId);
 	}

@@ -30,6 +30,12 @@ import com.netflix.loadbalancer.ILoadBalancer;
  * creates a Spring ApplicationContext per client name, and extracts the beans that it
  * needs from there.
  *
+ *对spring进行一定的封装，可以从spring获取bean，变成ribbon自己的SpringClientFactory
+ *创建客户端、负载均衡器、配置实例等。它会创建一个Spring ApplicationContext：每个服务实例都对应一个applicationContext。
+ * applicationContext中包含了这个服务中的一堆组件，比如LoadBalancer等。
+ * 所以，如果你想获取某个服务的LoadBalancer，那么从这个服务对应的SpringApplicationContext容器中获取即可。
+ * 根据ILoadBalancer接口类型，获取一个ILoadBalancer接口类型的实例化的bean即可
+ *
  * @author Spencer Gibb
  * @author Dave Syer
  */
@@ -51,6 +57,7 @@ public class SpringClientFactory extends NamedContextFactory<RibbonClientSpecifi
 
 	/**
 	 * Get the load balancer associated with the name.
+	 * 通过serviceName获取LoadBalancer
 	 * @throws RuntimeException if any error occurs
 	 */
 	public ILoadBalancer getLoadBalancer(String name) {
@@ -103,6 +110,14 @@ public class SpringClientFactory extends NamedContextFactory<RibbonClientSpecifi
 		return result;
 	}
 
+	/**
+	 * @Author sunqixin
+	 * @Description 获取服务的LoadBalancer。找父类中的getInstance方法
+	 * @Date 20:19 2020/8/17
+	 * @param name:服务名
+	 * @param type:ILoadBalancer.class
+	 * @return LoadBalancer
+	 **/
 	@Override
 	public <C> C getInstance(String name, Class<C> type) {
 		C instance = super.getInstance(name, type);

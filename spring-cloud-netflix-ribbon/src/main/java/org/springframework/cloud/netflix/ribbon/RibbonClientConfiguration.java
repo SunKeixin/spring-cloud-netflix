@@ -126,6 +126,18 @@ public class RibbonClientConfiguration {
 		return new PollingServerListUpdater(config);
 	}
 
+	/**
+	 * @Author sunqixin
+	 * @Description 初始化ILoadBalancer
+	 * @Date 18:28 2020/8/17
+	 * @param config:配置信息
+	 * @param serverList:服务列表
+	 * @param serverListFilter:过滤器
+	 * @param rule:规则器
+	 * @param ping:心跳器
+	 * @param serverListUpdater:服务列表更新器
+	 * @return 加入容器的ZoneAwareLoadBalancer
+	 **/
 	@Bean
 	@ConditionalOnMissingBean
 	public ILoadBalancer ribbonLoadBalancer(IClientConfig config,
@@ -134,6 +146,7 @@ public class RibbonClientConfiguration {
 		if (this.propertiesFactory.isSet(ILoadBalancer.class, name)) {
 			return this.propertiesFactory.get(ILoadBalancer.class, config, name);
 		}
+		//默认的ILoadBalancer是ZoneAwareLoadBalancer
 		return new ZoneAwareLoadBalancer<>(config, rule, ping, serverList,
 				serverListFilter, serverListUpdater);
 	}
